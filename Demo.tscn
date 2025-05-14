@@ -1,37 +1,49 @@
-[gd_scene load_steps=7 format=3 uid="uid://h3tqpo7swx1u"]
+[gd_scene load_steps=8 format=3 uid="uid://h3tqpo7swx1u"]
 
-[ext_resource type="Shader" path="res://Cel-Shader/shader.gdshader" id="1_b2kjg"]
-[ext_resource type="Shader" path="res://Cel-Shader/outline.gdshader" id="1_lx0on"]
 [ext_resource type="Script" path="res://Scripts/SpinCube.gd" id="1_o7201"]
+[ext_resource type="Shader" path="res://PostProcessing/DownSampling.gdshader" id="2_cwwxy"]
+[ext_resource type="Script" path="res://FreeCamera.gd" id="4_agc0x"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_e4r37"]
+[sub_resource type="BoxMesh" id="BoxMesh_66ijh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8p7g1"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0, 0.411765, 0, 1)
+roughness = 0.0
+emission_energy_multiplier = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_ytkcm"]
+lightmap_size_hint = Vector2i(12, 12)
+flip_faces = true
+size = Vector2(2, 2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1em4"]
 render_priority = 0
-shader = ExtResource("1_lx0on")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3meb1"]
-render_priority = 0
-next_pass = SubResource("ShaderMaterial_e4r37")
-shader = ExtResource("1_b2kjg")
-shader_parameter/ao_light_affect = 0.0
-shader_parameter/alpha_cutoff = 0.5
-shader_parameter/color = Color(0.7, 0.12, 0.86, 1)
-shader_parameter/specular = Color(0.3, 0.3, 0.3, 0.5)
-shader_parameter/fresnel = Color(0.2, 0.2, 0.2, 0.3)
-shader_parameter/uv_scale = Vector2(1, 1)
-shader_parameter/uv_offset = Vector2(0, 0)
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_ta60g"]
+shader = ExtResource("2_cwwxy")
 
 [node name="Demo" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0177402, 0.0133433, 0.00737524)
 
-[node name="Object" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, -3.48787e-16, 3.48787e-16, 3.48787e-16, 1, -3.48787e-16, -3.48787e-16, 3.48787e-16, 1, -0.0116839, -0.0232146, -0.0344901)
-material_override = SubResource("ShaderMaterial_3meb1")
-mesh = SubResource("CapsuleMesh_ta60g")
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.843224, 0.670649, 1.89711)
+
+[node name="Object2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, -6.97574e-16, 6.97574e-16, 6.95061e-16, 0.999994, 0.00359537, -7.00078e-16, -0.00359537, 0.999994, 0.00125217, -0.00476086, -0.00506592)
+mesh = SubResource("BoxMesh_66ijh")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_8p7g1")
 script = ExtResource("1_o7201")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 6)
+projection = 1
+size = 4.0
+script = ExtResource("4_agc0x")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.471042, 0.0578612, 1.68849)
+[node name="PostProcessingQuad" type="MeshInstance3D" parent="Camera3D"]
+visible = false
+cast_shadow = 0
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_ytkcm")
+surface_material_override/0 = SubResource("ShaderMaterial_o1em4")
